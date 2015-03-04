@@ -1,0 +1,3 @@
+- map out how to scale js architecture (including extra controllers, services, directives)
+- figure out a quick way to implement the CSS
+- map out the actual javascript of the app -- review functionality of current
