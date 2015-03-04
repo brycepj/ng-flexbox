@@ -1,8 +1,7 @@
 var angular = require('angular');
 
-console.log('angular', angular);
+var thing = require('./controllers/mainctrl');
 
-angular.module('tester', [])
-  .config(function() {
-    console.log('hello world from main ctrl.js');
-  });
+thing();
+
+console.log('angular', angular);
