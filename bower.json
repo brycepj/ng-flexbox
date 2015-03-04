@@ -1,0 +1,19 @@
+{
+  "name": "ng-flexbox",
+  "version": "0.0.0",
+  "authors": [
+    "bryce <brycepj@gmail.com>"
+  ],
+  "description": "refactor of flexbox in 5",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "font-awesome": "~4.3.0"
+  }
+}
