@@ -12,7 +12,6 @@ var concat = require('gulp-concat');
 var jade = require('gulp-jade');
 var less = require('gulp-less');
 var autoprefixer = require('gulp-autoprefixer');
-var ts = require('gulp-typescript');
 
 // tasks
  
@@ -23,9 +22,7 @@ gulp.task('scripts', function() {
 });
 
 gulp.task('js', function() {
-  return gulp.src('./app/js/**/*.ts')
-    .pipe(ts())
-    .pipe(concat('main.js'))
+  return gulp.src('./app/js/**/*.js')
     .pipe(gulp.dest('./dist/js'));
 })
 

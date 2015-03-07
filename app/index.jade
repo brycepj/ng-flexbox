@@ -11,12 +11,14 @@ html
     link(rel='stylesheet', href='css/main.css')
     script(src='./bower_components/angular/angular.js')
     script(src='./bower_components/lodash/lodash.js')
-  body
-    .container
+  body(ng-app='fb')
+    .container(ng-controller='FlexContainerCtrl')
       h1 
         i.fa.fa-plus
-          | JADE MF
+          | JADE MF {{css.tester}}
       // views
-      div(ng-view='')
+      div(ng-repeat='item in items')
+        p {{item.hello}}
+      p
     // scripts
     script(src='./js/main.js')
