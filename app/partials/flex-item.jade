@@ -1,0 +1,39 @@
+#flex-list(type='template/knockout')
+.flex-item.animated(data-bind='style:{\
+  height:iPropsCurrent.height,\
+    width:iPropsCurrent.width,\
+    margin:iPropsCurrent.margin,\
+    flexGrow:iPropsCurrent.flexGrow,\
+    flexShrink:iPropsCurrent.flexShrink,\
+    flexBasis:iPropsCurrent.flexBasis,\
+    alignSelf:iPropsCurrent.alignSelf\
+    }')
+      a.fi-destroy-btn(href='#', data-bind='click:destroySelf')
+        i.fa.fa-times      
+      a.fi-settings-btn(href='#', data-bind='click:toggleSettings, visible:tallEnough')
+        i.fa.fa-cog
+      span.fi-index(data-bind='text:index')
+      p.fi-content(data-bind='visible:viewContent,text:content')
+      .fi-options(data-bind='visible:viewSettings')
+        span.fi-o-title
+          a(href='#', data-bind='click:makeFixedWidth, style:{fontSize:highlightFixed}') fixed
+          |  or 
+          a(href='#', data-bind='click:makeFlexyWidth, style:{fontSize:highlightFlexy}') flexy
+          |  width?
+        .fi-options-fixed(data-bind='visible:isFixedWidth')
+          label
+            | width: 
+            input(type='text', data-bind='enable:isFixedWidth, value:iPropsCurrent.width')
+          label
+            | height: 
+            input(type='text', data-bind='enable:isFixedWidth, value:iPropsCurrent.height')
+        .fi-options-flexy(data-bind='visible:isFlexyWidth')
+          label
+            | flex-grow: 
+            input(type='text', data-bind='enable:isFlexyWidth, value:iPropsCurrent.flexGrow')
+          label(for='')
+            | flex-shrink: 
+            input(type='text', data-bind='value:iPropsCurrent.flexShrink')
+          label(for='')
+            | flex-basis: 
+            input(type='text', data-bind='value:iPropsCurrent.flexBasis')
