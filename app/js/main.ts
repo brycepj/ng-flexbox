@@ -1,3 +1,6 @@
-module Directives {
-  console.log('here are the directives');
+///<reference path="../../typings/tsd.d.ts" />
+
+module fb {
+  console.log('lodash', _);
+  console.log('angular', angular);
 }
