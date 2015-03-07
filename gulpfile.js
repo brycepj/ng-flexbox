@@ -2,16 +2,42 @@
 var gulp = require('gulp');
 
 // plugins
+var concat = require('gulp-concat');
 var connect = require('gulp-connect');
 var jshint = require('gulp-jshint');
 var uglify = require('gulp-uglify');
-var minifyCSS = require('gulp-minify-css');
 var clean = require('gulp-clean');
 var browserify = require('gulp-browserify');
 var concat = require('gulp-concat');
 var jade = require('gulp-jade');
+var less = require('gulp-less');
+var autoprefixer = require('gulp-autoprefixer');
+var ts = require('gulp-typescript');
 
 // tasks
+ 
+gulp.task('scripts', function() {
+  return gulp.src('./lib/*.js')
+    .pipe(concat('all.js'))
+    .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('js', function() {
+  return gulp.src('./app/js/**/*.ts')
+    .pipe(ts())
+    .pipe(concat('main.js'))
+    .pipe(gulp.dest('./dist/js'));
+})
+
+gulp.task('css', function () {
+  return gulp.src('./app/css/main.less')
+    .pipe(less())
+    .pipe(autoprefixer({
+        browsers: ['> 5%'],
+        cascade: true
+    }))
+    .pipe(gulp.dest('./dist/css'));
+});
 
 gulp.task('templates', function() {
   var YOUR_LOCALS = {};
@@ -37,12 +63,6 @@ gulp.task('clean', function() {
       .pipe(clean({force: true}));
 });
 
-gulp.task('minify-css', function() {
-  var opts = {comments:true,spare:true};
-  gulp.src(['./app/**/*.css', '!./app/bower_components/**'])
-    .pipe(minifyCSS(opts))
-    .pipe(gulp.dest('./dist/'))
-});
 gulp.task('minify-js', function() {
   gulp.src(['./app/**/*.js', '!./app/bower_components/**'])
     .pipe(uglify({
@@ -69,32 +89,14 @@ gulp.task('connectDist', function () {
   });
 });
 
-gulp.task('browserify', function() {
-  gulp.src(['app/js/main.js'])
-  .pipe(browserify({
-    insertGlobals: true,
-    debug: true
-  }))
-  .pipe(concat('bundled.js'))
-  .pipe(gulp.dest('./app/js'))
-});
 
-gulp.task('browserifyDist', function() {
-  gulp.src(['app/js/main.js'])
-  .pipe(browserify({
-    insertGlobals: true,
-    debug: true
-  }))
-  .pipe(concat('bundled.js'))
-  .pipe(gulp.dest('./dist/js'))
-});
 
 // default task
 gulp.task('default',
-  ['lint', 'browserify', 'connect']
+  ['lint', 'connect']
 );
 
 // build task
 gulp.task('build',
-  ['lint', 'templates', 'minify-css', 'browserifyDist', 'copy-bower-components', 'connectDist']
+  ['lint', 'templates', 'css', 'js', 'copy-bower-components', 'connectDist']
 );
