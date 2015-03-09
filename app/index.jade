@@ -13,6 +13,7 @@ html
     script(src='./bower_components/modernizr.js')
     script(src='./bower_components/angular/angular.js')
     script(src='./bower_components/lodash/lodash.js')
+    script(src='./bower_components/store-js/store.js')
   body
     .container(ng-controller='FlexContainerCtrl')
       h1 
@@ -25,9 +26,6 @@ html
     // scripts
     script(src='./js/main.js')
 
-
-
-
   body#flexbox-app(ng-app='fb')
     .masthead(ng-include='/partials/masthead.html')
     .flex-container-wrap(ng-include='/partials/flex-container.html')
@@ -39,8 +37,5 @@ html
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
       ga('create', 'UA-60483722-1', 'auto');
       ga('send', 'pageview');
-
-    link(rel='stylesheet', href='scss/vendors/_animate.scss')

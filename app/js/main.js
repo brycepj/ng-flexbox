@@ -1,38 +1,33 @@
 angular.module('fb', [])
-  .controller('FlexContainerCtrl', function($scope) {
-    $scope.css = getContainerCSS(); 
-    $scope.items = getFlexItems();
-    $scope.defaults = getDefaultItemProps();
+  .run(function(CacheValley, FlexItem, TourSlide) {
+    // register models that you want to save in local storage here
+    // they will be used later on to check if anything exists in local storage
+
+    var register = CacheValley.register;
+
+    register('flexItem', FlexItem.constructor); // constructor will be used like schema?
+    register('tourSlide', TourSlide.constructor); 
+  })
+  .controller('FlexContainerCtrl', function($scope, FlexItem, FlexItemsModel, FlexContainerModel) {
+    var items = $scope.items = FlexItemsModel,
+        container = $scope.container = FlexContainerModel;
     
     $scope.newItem = newItem;
     $scope.removeItem = removeItem;
-    function newItem(props) {
-      // add new item to the end
+
+    function newItem() {
+      var idx = container.list.length,
+          item = FlexItem(idx);
+      
+      container.list.push(item);
     }
 
-    function removeItem(arguments) {
-      // body...
-    }
-
-    function getContainerCSS() {
-      // check local storage
-      // get props based on default
-      // Make this a service
-      return {
-        tester: 'This is most certainly not a test'
-      };
-    }
-
-    function getFlexItems() {
-      // check local storage
-      // return FlexContainer (object with properties and methods)
-      // Make this a service
-
-      return [];
+    function removeItem(idx) {
+      container.list.splice(idx,1);
     }
 
   })
-  .controller('SpecTourCtrl', function($scope){
+  .controller('TourCtrl', function($scope){
     $scope.slides = getTour();
     
     $scope.next = next;
@@ -59,12 +54,77 @@ angular.module('fb', [])
     }
   })
   .controller('FlexItemCtrl', function($scope) {
-    $scope.oneittlebabyscope = 'this';
+    $scope.onelittlebabyscope = 'this';
   })
-  .service('FlexItem', function(ItemDefaults) {
-    return function(){
+  .service('FlexItem', function(ItemProps) {
+    // then it will return an object 
+    return function(custom, idx){
+      var obj = this,
+          defaults = getProps,
+          item = _.assign(obj, defaults);;
 
-    }
+
+      if (_.isObject(custom)) {
+        item = _.assign(item, custom);
+      }   
+          
+
+      function getProps(idx) {
+        return {  
+          index: idx,
+          css: {
+            width: ItemProps('width', {fixed:'300px', flexy:'0',}),
+            height: ItemProps('height', {fixed:'300px', flexy:'0',}),
+            flex-grow: ItemProps('flex-grow', {fixed: null, flexy:'1',}),
+            flex-shrink: ItemProps('flex-shrink', {fixed: null, flexy:'1',}),
+            flex-basis: ItemProps('flex-basis', {fixed: null, flexy:,}, ['auto', 'content']),
+            align-self: ItemProps('align-self', {fixed: null, flexy:,}, ['flex-start','flex-end','center','baseline','stretch']),
+          },
+          editing: false,
+        }
+      }    
+    } 
+
+  })
+  .service('ItemProps', function() {
+    return function(name, fixflex, options)
+      var obj = this;
+      obj.name = name;
+      obj.val = _.assign({},fixflex);
+      if (options) {
+        obj.options = options;
+      } else {
+        obj.options = null; 
+      }
+      obj.get = getter;
+      obj.set = setter;
+
+      return obj;
+
+      function getter(fixflex){
+        return obj.val[fixflex];
+      }
+
+      function setter(val, fixflex) {
+        if (obj.options.indexOf(val) > -1) {
+          obj.val[fixflex] = val;
+        } else {
+          throw Error("The value you're trying to set --" + val + " is not a valid property.");
+        }
+      }
+  })
+  .controller('CodeSampleCtrl',function($scope) {
+    // you're going to need to use this controller to put formatted code on the scope (maybe not) maybe 
+    // some skilled templating will do the trick
+
+  })
+  .directive('copyCodeSamples', function() {
+    // this will listen for a click event on the item and then 
+    // document.addEventListener('copy', function(e){
+    // e.clipboardData.setData('text/plain', 'Hello, world!');
+    // e.clipboardData.setData('text/html', '<b>Hello, world!</b>');
+    // e.preventDefault(); // We want our data, not data from any selection, to be written to the clipboard
+  }); 
   })
   .service('TourAction', function(validators) {
     return function(action){
@@ -84,6 +144,41 @@ angular.module('fb', [])
   .value('TourText', function(){
     // return JSON
   })
+  .factory('CacheValley',function(){
+    // check if browser allows you to cache
+    return {
+      save: save,
+      get: get,
+      check: check,
+      clear: all,
+      register: register,
+    };
+
+    var win = $window;
+    var storage = win.localStorage;
+    var types = [];
+
+    function getSaved(key) {
+      
+    }
+
+    function register(key, constructor, callback) {
+      // callable from anywhere you want to register a certain type of saveable object (needs to be in a run block)
+      // arrays of items, preferences, last slide -- save
+      // this will need to do something to preserve the type of what we are saving so it's not all a string
+    }
+  })
+  .service('FlexItemsModel', function(arguments) {
+    // this will check local storage
+    // it will also add any neccessary methods to the object (like remove or add new)
+    // it will return an object with data array, and methods to manipulate the date
+    // how about type checking too?
+  })
+  .service('FlexContainerModel', function(arguments) {
+    // this will check the local storage
+    // it will then set the defaults (this is where I can adjust them)
+    // it will return an object with Flexcontainer defaults to be set  
+  })
   .factory('validators', function() {
     return {
       isUrl: isUrl,
@@ -99,7 +194,38 @@ angular.module('fb', [])
       
       return pattern.test(str);
     }
-  });
+  })
+  .factory('devLorem', function(devLoremLib) {
+    var lib = devLoremLib;
+    return {
+      get: getDevLorem,
+    }
+
+    function getDevLorem(count) {
+      var defaultCount = 10,
+          words = [],
+          used = [];
+      if (!count){
+        count = defaultCount;
+      }
+      while(count > -1) {
+        var newWord = lib[Math.floor(Math.random() * lib.length)];
+
+        // check to to see if we've used it once already
+        if (used.indexOf(newWord) < -1) {
+          words.push(newWord);
+          count--;
+        }
+      }
+      return words.join(' ');
+    }
+
+
+  })
+  .value('devLoremLib', [
+      'apple\'s website', 'unobtrusive javascript', 'static', 'brad frost', 'organic', 'mockup', 'whitespace', 'above the fold', 'skeuomorphism', 'always be shipping', 'steve jobs', 'flat design', 'grid', 'net neutrality', 'SOPA', 'code', 'ICANN', 'content strategy', 'content', 'f.lux', 'blue beanie', 'rollover', 'table', 'css zen garden', 'preload', 'gif', 'sprite', 'laura kalbag', 'dev bootcamp', 'cs degree', 'hacker school', 'the picture element', 'W3 Fools', 'W3C', 'ftp', 'deployment strategy', 'python vs ruby', 'jeff atwood', 'stack overflow', 'just build websites', 'wordpress', 'java', 'pycharm', 'web storm', 'foreach', 'addClass', 'slice', 'alex sexton', '80/20 rule', 'float drop', 'bacon ipsum', 'dogmatic', 'promise', 'atomic design', 'shoptalkshow', 'yayQuery', 'javascript jabber', 'vagrant', 'chris coyier', 'flexbox', 'device agnostic', 'breaks in ie6', 'paul irish', 'web standards', 'grok', 'crufty', 'angular', 'MV*', 'addy osmani', 'custom elements', 'paralax', 'performance budget', 'offline first', 'gulp', 'node', 'ie6 countdown', 'progressive enhancement', 'the Industry', 'svg', 'machine code', 'rails', 'django', 'google', 'indexDB', 'webgl', 'ux/ui', 'tim kadlec', 'retina', 'fixed header', 'minimalist', 'QR codes', 'art direction', 'masonry', 'infinite scrolling', 'lazy load', 'mobile navigation toggle', 'api', 'spa', 'ember', 'backbone', 'mvc', 'require', 'the open web', 'server farm', 'bash', 'free as in beer', 'nosql', 'how long does it take to learn javascript', 'gui', 'fortran', 'server-side', 'back-end', 'groovy on grails', 'haskell', 'erlang', 'continuous integration', 'capistrano', 'typescript', 'coffeescript', 'google dart', 'yehuda katz',
+  ])
+;
 
 
 
