@@ -1,82 +1,78 @@
-    aside.sidebar
-      #message-box.message-box
-        span.mb-title tour      
-        span.mb-progress(data-bind='text:tourBox.tourProgress')
-        p.mb-content(data-bind='html:tourBox.currentMessage')
-        a.mb-action(href='#', target='_blank', data-bind='visible:tourBox.hasButton,text:tourBox.currentXText,attr: {href:tourBox.currentXUrl}')
-        a.mb-action(href='#', target='_blank', data-bind='visible:tourBox.currentAction,click:tourAction,text:tourBox.currentXText') do it!
-        nav.mb-nav
-          a(href='#', data-bind='click:tourPrevious')
-            i.fa.fa-chevron-left
-          a(href='#', data-bind='click:tourNext')
-            i.fa.fa-chevron-right
-      .control-panel
-        span.cp-title control panel
-        .cp-wrap
-          .cp-items
-            span.cp-c-title new item
-            .cp-i-add-remove
-              a.cp-i-add(data-bind='click:newItem')
-                i.fa.fa-plus
-              a.cp-i-remove(data-bind='click:oneLessItem')
-                i.fa.fa-minus
-            .cp-i-settings
-              .cp-i-s-width
-                label(for='fixed')
-                  | fixed
-                  input(data-bind='checked:flexType', type='radio', name='flexType', value='fixed', checked='')
-                label(for='flexy')
-                  | flexible
-                  input(data-bind='checked:flexType', type='radio', name='flexType', value='flexy')
-              label(for='')
-                | lorem? 
-                input(data-bind='value:loremCount', type='text')
-            .cp-actions
-              a(href='#', data-bind='click:destroyAll') delete all
-              a(href='#', data-bind='click:tourResize') resize box
-          .cp-container
-            span.cp-c-title container properties
-            label
-              | flex-direction: 
-              select(data-bind='options:flexDirectionOptions, value:cPropsCurrent.flexDirection')
-            label
-              | flex-wrap: 
-              select(data-bind='options:flexWrapOptions, value:cPropsCurrent.flexWrap')
-            label
-              | justify-content: 
-              select(data-bind='options:justifyContentOptions, value:cPropsCurrent.justifyContent')
-            label
-              | align-items: 
-              select(data-bind='options:alignItemsOptions, value:cPropsCurrent.alignItems')
-            label
-              | align-content: 
-              select(data-bind='options:alignContentOptions, value:cPropsCurrent.alignContent')
-      .code-box
-        span.cb-title code samples
-        .cb-item
-          code
-            pre.
-              \n
-              .flex-container {
-                  display:flex;
-                  flex-direction:               ;
-                  flex-wrap:               ;
-                  justify-content:               ;
-                  align-content:               ;
-                  align-items:               ;
-              }
-              \t\t              
-        .cb-item
-          code
-            pre.
-              \n
-              .flex-items-default {
-                  width:               ;
-                  height:               ;
-                  flex-grow:               ;
-                  flex-shrink:               ;
-                  flex-basis:               ;
-              }
-              \t\t              
-        |         
-        .code-box-items(data-bind="template: { name: 'code-box-items', foreach: items, as:'item' }")
+aside.sidebar
+  #message-box.message-box
+    span.mb-title tour
+    span.mb-progress(data-bind='text:tourBox.tourProgress')
+    p.mb-content(data-bind='html:tourBox.currentMessage')
+    a.mb-action(href='#', target='_blank', data-bind='visible:tourBox.hasButton,text:tourBox.currentXText,attr: {href:tourBox.currentXUrl}')
+    a.mb-action(href='#', target='_blank', data-bind='visible:tourBox.currentAction,click:tourAction,text:tourBox.currentXText') do it!
+    nav.mb-nav
+      a(href='#', data-bind='click:tourPrevious')
+        i.fa.fa-chevron-left
+      a(href='#', data-bind='click:tourNext')
+        i.fa.fa-chevron-right
+  .control-panel
+    span.cp-title control panel
+    .cp-wrap
+      .cp-items
+        span.cp-c-title new item
+        .cp-i-add-remove
+          a.cp-i-add(data-bind='click:newItem')
+            i.fa.fa-plus
+          a.cp-i-remove(data-bind='click:oneLessItem')
+            i.fa.fa-minus
+        .cp-i-settings
+          .cp-i-s-width
+            label(for='fixed')
+              | fixed
+              input(data-bind='checked:flexType', type='radio', name='flexType', value='fixed', checked='')
+            label(for='flexy')
+              | flexible
+              input(data-bind='checked:flexType', type='radio', name='flexType', value='flexy')
+          label(for='')
+            | lorem?
+            input(data-bind='value:loremCount', type='text')
+        .cp-actions
+          a(href='#', data-bind='click:destroyAll') delete all
+          a(href='#', data-bind='click:tourResize') resize box
+      .cp-container
+        span.cp-c-title container properties
+        label
+          | flex-direction:
+          select(data-bind='options:flexDirectionOptions, value:cPropsCurrent.flexDirection')
+        label
+          | flex-wrap:
+          select(data-bind='options:flexWrapOptions, value:cPropsCurrent.flexWrap')
+        label
+          | justify-content:
+          select(data-bind='options:justifyContentOptions, value:cPropsCurrent.justifyContent')
+        label
+          | align-items:
+          select(data-bind='options:alignItemsOptions, value:cPropsCurrent.alignItems')
+        label
+          | align-content:
+          select(data-bind='options:alignContentOptions, value:cPropsCurrent.alignContent')
+  //- .code-box
+    span.cb-title code samples
+    .cb-item
+      //- code
+        pre
+          .flex-container {
+              display:flex;
+              flex-direction:;
+              flex-wrap:;
+              justify-content:;
+              align-content:               ;
+              align-items:               ;
+          }
+    .cb-item
+      code
+        pre
+          .flex-items-default {
+              width: ;
+              height: ;
+              flex-grow: ;
+              flex-shrink: ;
+              flex-basis:;
+          }
+    |
+    .code-box-items(data-bind="template: { name: 'code-box-items', foreach: items, as:'item' }")

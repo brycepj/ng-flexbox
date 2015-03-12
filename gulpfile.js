@@ -14,7 +14,7 @@ var less = require('gulp-less');
 var autoprefixer = require('gulp-autoprefixer');
 
 // tasks
- 
+
 gulp.task('scripts', function() {
   return gulp.src('./lib/*.js')
     .pipe(concat('all.js'))
@@ -38,7 +38,7 @@ gulp.task('css', function () {
 
 gulp.task('templates', function() {
   var YOUR_LOCALS = {};
- 
+
   gulp.src('./app/**/*.jade')
     .pipe(jade({
       locals: YOUR_LOCALS
@@ -95,5 +95,5 @@ gulp.task('default',
 
 // build task
 gulp.task('build',
-  ['lint', 'templates', 'css', 'js', 'copy-bower-components', 'connectDist']
+  ['templates', 'css', 'js', 'copy-bower-components', 'connectDist']
 );

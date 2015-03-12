@@ -1,24 +1,33 @@
 angular.module('fb', [])
-  .run(function(CacheValley, FlexItem, TourSlide) {
+  .run(function(cache, FlexItem, TourSlide) {
     // register models that you want to save in local storage here
     // they will be used later on to check if anything exists in local storage
 
-    var register = CacheValley.register;
+    var register = cache.register;
 
-    register('flexItem', FlexItem.constructor); // constructor will be used like schema?
-    register('tourSlide', TourSlide.constructor); 
+    register('flexItems', Array);
+    register('tourslide', Number);
+    register('flexContainer', Object);
+
+    cache.get('flexItems');
+    // check if it's a registered type
+    // get store.get('flexItem')
+    // check if it's the right type
+    // return it
+    // register should
+
   })
   .controller('FlexContainerCtrl', function($scope, FlexItem, FlexItemsModel, FlexContainerModel) {
     var items = $scope.items = FlexItemsModel,
         container = $scope.container = FlexContainerModel;
-    
+
     $scope.newItem = newItem;
     $scope.removeItem = removeItem;
 
     function newItem() {
       var idx = container.list.length,
           item = FlexItem(idx);
-      
+
       container.list.push(item);
     }
 
@@ -29,10 +38,10 @@ angular.module('fb', [])
   })
   .controller('TourCtrl', function($scope){
     $scope.slides = getTour();
-    
+
     $scope.next = next;
     $scope.previous = previous;
-    $scope.current = setCurrent(); 
+    $scope.current = setCurrent();
     $scope.action = null;
 
     function getTour(){
@@ -57,20 +66,19 @@ angular.module('fb', [])
     $scope.onelittlebabyscope = 'this';
   })
   .service('FlexItem', function(ItemProps) {
-    // then it will return an object 
+    // then it will return an object
     return function(custom, idx){
       var obj = this,
           defaults = getProps,
-          item = _.assign(obj, defaults);;
+          item = _.assign(obj, defaults);
 
 
       if (_.isObject(custom)) {
         item = _.assign(item, custom);
-      }   
-          
+      }
 
       function getProps(idx) {
-        return {  
+        return {
           index: idx,
           css: {
             width: ItemProps('width', {fixed:'300px', flexy:'0',}),
@@ -82,19 +90,19 @@ angular.module('fb', [])
           },
           editing: false,
         }
-      }    
-    } 
+      }
+    }
 
   })
   .service('ItemProps', function() {
-    return function(name, fixflex, options)
+    return function(name, fixflex, options) {
       var obj = this;
       obj.name = name;
       obj.val = _.assign({},fixflex);
       if (options) {
         obj.options = options;
       } else {
-        obj.options = null; 
+        obj.options = null;
       }
       obj.get = getter;
       obj.set = setter;
@@ -114,17 +122,17 @@ angular.module('fb', [])
       }
   })
   .controller('CodeSampleCtrl',function($scope) {
-    // you're going to need to use this controller to put formatted code on the scope (maybe not) maybe 
+    // you're going to need to use this controller to put formatted code on the scope (maybe not) maybe
     // some skilled templating will do the trick
 
   })
   .directive('copyCodeSamples', function() {
-    // this will listen for a click event on the item and then 
+    // this will listen for a click event on the item and then
     // document.addEventListener('copy', function(e){
     // e.clipboardData.setData('text/plain', 'Hello, world!');
     // e.clipboardData.setData('text/html', '<b>Hello, world!</b>');
     // e.preventDefault(); // We want our data, not data from any selection, to be written to the clipboard
-  }); 
+  });
   })
   .service('TourAction', function(validators) {
     return function(action){
@@ -144,40 +152,60 @@ angular.module('fb', [])
   .value('TourText', function(){
     // return JSON
   })
-  .factory('CacheValley',function(){
+  .factory('cache',function(){
     // check if browser allows you to cache
+
+    if (!store.enabled) {
+      alert('You should enable something.');
+      return;
+    }
+
     return {
-      save: save,
-      get: get,
-      check: check,
-      clear: all,
+      set: store.set,
+      get: store.get,
+      clear: store.clear,
+      remove: store.remove,
       register: register,
     };
 
-    var win = $window;
-    var storage = win.localStorage;
-    var types = [];
-
-    function getSaved(key) {
-      
+    function register() {
+      // flex items = [{},{}] = flexItems = [];
+      // flex container = {} = flexContainer = {}
+      // tour location = slide number = tourSlide = number
     }
 
-    function register(key, constructor, callback) {
-      // callable from anywhere you want to register a certain type of saveable object (needs to be in a run block)
-      // arrays of items, preferences, last slide -- save
-      // this will need to do something to preserve the type of what we are saving so it's not all a string
+  })
+  .service('FlexItemsModel', function(cache) {
+    var svc = this;
+    var cached = cache.get('flexItems');
+
+    if (_.isArray(cached.length)) {
+      svc.data = cached;
+    } else {
+      svc.data = [];
     }
+
   })
-  .service('FlexItemsModel', function(arguments) {
-    // this will check local storage
-    // it will also add any neccessary methods to the object (like remove or add new)
-    // it will return an object with data array, and methods to manipulate the date
-    // how about type checking too?
-  })
-  .service('FlexContainerModel', function(arguments) {
+  .service('FlexContainerModel', function(cache) {
+    var svc = this,
+        cached = cache.get('flexContainer');
+
+    if (_.isObject(cached)) {
+      svc.data = cached;
+    } else {
+      svc.data = {
+          display: "flex",
+          flex-direction: "row",
+          flex-wrap: "wrap",
+          justify-content: "center",
+          align-items: "center",
+          align-content: "center"
+      };
+    }
+
     // this will check the local storage
     // it will then set the defaults (this is where I can adjust them)
-    // it will return an object with Flexcontainer defaults to be set  
+    // it will return an object with Flexcontainer defaults to be set
   })
   .factory('validators', function() {
     return {
@@ -191,7 +219,7 @@ angular.module('fb', [])
         '(\:\d+)?(\/[-a-z\d%_.~+]*)*'+ // port and path
         '(\?[;&a-z\d%_.~+=-]*)?'+ // query string
         '(\#[-a-z\d_]*)?$','i'); // fragment locater
-      
+
       return pattern.test(str);
     }
   })
