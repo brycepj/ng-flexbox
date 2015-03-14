@@ -1,21 +1,11 @@
 angular.module('fb', [])
-  .run(function(cache, FlexItem, TourSlide) {
-    // register models that you want to save in local storage here
-    // they will be used later on to check if anything exists in local storage
+  .run(function(cache, FlexItem, validators) {
+    var registerStorageType = cache.register,
+        v = validators;
 
-    var register = cache.register;
-
-    register('flexItems', Array);
-    register('tourslide', Number);
-    register('flexContainer', Object);
-
-    cache.get('flexItems');
-    // check if it's a registered type
-    // get store.get('flexItem')
-    // check if it's the right type
-    // return it
-    // register should
-
+    registerStorageType('flexItems', v.collection);
+    registerStorageType('tourSlide', v.number);
+    registerStorageType('flexContainer', v.object);
   })
   .controller('FlexContainerCtrl', function($scope, FlexItem, FlexItemsModel, FlexContainerModel) {
     var items = $scope.items = FlexItemsModel,
@@ -83,10 +73,10 @@ angular.module('fb', [])
           css: {
             width: ItemProps('width', {fixed:'300px', flexy:'0',}),
             height: ItemProps('height', {fixed:'300px', flexy:'0',}),
-            flex-grow: ItemProps('flex-grow', {fixed: null, flexy:'1',}),
-            flex-shrink: ItemProps('flex-shrink', {fixed: null, flexy:'1',}),
-            flex-basis: ItemProps('flex-basis', {fixed: null, flexy:,}, ['auto', 'content']),
-            align-self: ItemProps('align-self', {fixed: null, flexy:,}, ['flex-start','flex-end','center','baseline','stretch']),
+            flexGrow: ItemProps('flex-grow', {fixed: null, flexy:'1',}),
+            flexShrink: ItemProps('flex-shrink', {fixed: null, flexy:'1',}),
+            flexBasis: ItemProps('flex-basis', {fixed: null, flexy:'1'}, ['auto', 'content']),
+            alignSelf: ItemProps('align-self', {fixed: null, flexy:'flex-start'}, ['flex-start','flex-end','center','baseline','stretch']),
           },
           editing: false,
         }
@@ -120,6 +110,7 @@ angular.module('fb', [])
           throw Error("The value you're trying to set --" + val + " is not a valid property.");
         }
       }
+    }
   })
   .controller('CodeSampleCtrl',function($scope) {
     // you're going to need to use this controller to put formatted code on the scope (maybe not) maybe
@@ -132,7 +123,6 @@ angular.module('fb', [])
     // e.clipboardData.setData('text/plain', 'Hello, world!');
     // e.clipboardData.setData('text/html', '<b>Hello, world!</b>');
     // e.preventDefault(); // We want our data, not data from any selection, to be written to the clipboard
-  });
   })
   .service('TourAction', function(validators) {
     return function(action){
@@ -141,19 +131,22 @@ angular.module('fb', [])
       }
     };
   })
-  .service('TourSlide', function() {
-    return function(text, btnText, btnAction )
-      this.text = text;
-      this.index = index;
-      this.hasBtn = true;
-      this.btnText = ''
-      this.btnAction = TourAction(btnAction);
-  });
-  .value('TourText', function(){
-    // return JSON
-  })
-  .factory('cache',function(){
+  // .service('TourSlide', function() {
+  //   var svc = this;
+  //   return function(text, btnText, btnAction)
+  //     svc.text = text;
+  //     svc.index = index;
+  //     svc.hasBtn = true;
+  //     svc.btnText = ''
+  //     svc.btnAction = TourAction(btnAction);
+  // });
+  // .value('TourText', function(){
+  //   // return JSON
+  // })
+  .factory('cache',function(validators){
     // check if browser allows you to cache
+    var storedTypes = {names:[]},
+        v = validators;
 
     if (!store.enabled) {
       alert('You should enable something.');
@@ -161,17 +154,35 @@ angular.module('fb', [])
     }
 
     return {
-      set: store.set,
-      get: store.get,
+      set: set,
+      get: get,
       clear: store.clear,
       remove: store.remove,
       register: register,
     };
 
-    function register() {
-      // flex items = [{},{}] = flexItems = [];
-      // flex container = {} = flexContainer = {}
-      // tour location = slide number = tourSlide = number
+    function register(name, validator) {
+      if (!storedTypes[name] && storedTypes.names.indexOf(name) < 0) {
+        storedTypes['names'].push(name);
+        storedTypes[name] = {
+          validator: validator,
+        };
+      }
+    }
+
+    function set(name, value) {
+      var key = name,
+          hasName = storedTypes[names].indexOf(name) >= 0,
+          isValid = storedTypes[name].validator(value);
+      if (hasName && isValid) {
+        store.set(key,value);
+      }
+    }
+    function get(name) {
+      var key = name;
+      if (storedTypes.names.indexOf(name) >= 0) {
+        return store.get(key);
+      }
     }
 
   })
@@ -179,7 +190,7 @@ angular.module('fb', [])
     var svc = this;
     var cached = cache.get('flexItems');
 
-    if (_.isArray(cached.length)) {
+    if (cached) {
       svc.data = cached;
     } else {
       svc.data = [];
@@ -190,26 +201,25 @@ angular.module('fb', [])
     var svc = this,
         cached = cache.get('flexContainer');
 
-    if (_.isObject(cached)) {
+    if (cached) {
       svc.data = cached;
     } else {
       svc.data = {
           display: "flex",
-          flex-direction: "row",
-          flex-wrap: "wrap",
-          justify-content: "center",
-          align-items: "center",
-          align-content: "center"
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          alignItems: "center",
+          alignContent: "center"
       };
     }
-
-    // this will check the local storage
-    // it will then set the defaults (this is where I can adjust them)
-    // it will return an object with Flexcontainer defaults to be set
   })
   .factory('validators', function() {
     return {
       isUrl: isUrl,
+      collection: isCollection,
+      number: _.isNumber,
+      object: _.isObject,
     };
 
     function isUrl(str) {
@@ -221,6 +231,17 @@ angular.module('fb', [])
         '(\#[-a-z\d_]*)?$','i'); // fragment locater
 
       return pattern.test(str);
+    }
+
+    function isCollection(arr) {
+      var isArray = _.isArray(arr),
+          hasOnlyObjects = _.every(arr, function(val) {
+            return _.isObject(obj);
+          });
+
+          if (!hasOnlyObjects && arr.length == 0) hasOnlyObjects = true;
+
+      return isArray && hasOnlyObjects;
     }
   })
   .factory('devLorem', function(devLoremLib) {
