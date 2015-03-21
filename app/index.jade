@@ -14,17 +14,10 @@ html
     script(src='./bower_components/angular/angular.js')
     script(src='./bower_components/lodash/lodash.js')
     script(src='./bower_components/store-js/store.js')
-  body
-    .container(ng-controller='FlexContainerCtrl')
-      h1
-        i.fa.fa-plus
-      div container: {{container}}
-      div items: {{items}}
-
 
   body#flexbox-app(ng-app='fb')
     .masthead(ng-include='"/partials/masthead.html"')
-    .flex-container-wrap(ng-include='"/partials/flex-container.html"')
+    .flex-container-wrap(ng-controller='FlexContainerCtrl' ng-include='"/partials/flex-container.html"')
     .sidebar(ng-include='"/partials/sidebar.html"')
     #flex-list(ng-repeat='item in items' ng-include='"/partials/flex-list.html"')
     script(src='./js/main.js')

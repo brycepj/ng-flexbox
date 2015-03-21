@@ -12,8 +12,16 @@ var concat = require('gulp-concat');
 var jade = require('gulp-jade');
 var less = require('gulp-less');
 var autoprefixer = require('gulp-autoprefixer');
+var watch = require('gulp-watch');
+var batch = require('gulp-batch');
 
 // tasks
+
+gulp.task('watch', function () {
+    watch('./app/js/**/*.js', batch(function () {
+        gulp.start('build');
+    }));
+});
 
 gulp.task('scripts', function() {
   return gulp.src('./lib/*.js')
@@ -25,6 +33,7 @@ gulp.task('js', function() {
   return gulp.src('./app/js/**/*.js')
     .pipe(gulp.dest('./dist/js'));
 })
+
 
 gulp.task('css', function () {
   return gulp.src('./app/css/main.less')
@@ -95,5 +104,5 @@ gulp.task('default',
 
 // build task
 gulp.task('build',
-  ['templates', 'css', 'js', 'copy-bower-components', 'connectDist']
+  ['templates', 'css', 'js', 'copy-bower-components', 'connectDist', 'watch']
 );

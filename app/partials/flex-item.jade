@@ -1,30 +1,31 @@
-.flex-item.animated
-  a.fi-destroy-btn(href='#', data-bind='click:destroySelf')
+.flex-item.animated(ng-style='{}')
+  a.fi-destroy-btn(ng-click='destroySelf')
     i.fa.fa-times
-  a.fi-settings-btn(href='#', data-bind='click:toggleSettings, visible:tallEnough')
+  a.fi-settings-btn(ng-click='toggleSettings')
     i.fa.fa-cog
-  span.fi-index(data-bind='text:index')
-  p.fi-content(data-bind='visible:viewContent,text:content')
-  .fi-options(data-bind='visible:viewSettings')
-    span.fi-o-title
-      a(href='#', data-bind='click:makeFixedWidth, style:{fontSize:highlightFixed}') fixed
+  span.fi-index {{index}}
+  p.fi-content {{ content }}
+  .fi-options
+    div.fi-o-title
+      a(ng-click='item.isFixedWidth=true') fixed
       | or
-      a(href='#', data-bind='click:makeFlexyWidth, style:{fontSize:highlightFlexy}') flexy
+      a(ng-click='item.isFixedWidth=false') flexy
       |  width?
-    .fi-options-fixed(data-bind='visible:isFixedWidth')
-      label
-        | width:
-        input(type='text', data-bind='enable:isFixedWidth, value:iPropsCurrent.width')
-      label
-        | height:
-        input(type='text', data-bind='enable:isFixedWidth, value:iPropsCurrent.height')
-    .fi-options-flexy(data-bind='visible:isFlexyWidth')
-      label
-        | flex-grow:
-        input(type='text', data-bind='enable:isFlexyWidth, value:iPropsCurrent.flexGrow')
-      label(for='')
-        | flex-shrink:
-        input(type='text', data-bind='value:iPropsCurrent.flexShrink')
-      label(for='')
-        | flex-basis:
-        input(type='text', data-bind='value:iPropsCurrent.flexBasis')
+    div(ng-switch='item.isFixedWidth')
+      .fi-options-fixed(ng-switch-when='true')
+        label
+          | width:
+          input(type='text' ng-model='item.css.width.defaults.fixed')
+        label
+          | height:
+          input(type='text' ng-model='item.css.height.defaults.fixed')
+      .fi-options-flexy(ng-switch-when='false')
+        label
+          | flex-grow:
+          input(type='text' ng-model='item.css.flexGrow.defaults.flexy')
+        label
+          | flex-shrink:
+          input(type='text' ng-model='item.css.flexShrink.defaults.flexy')
+        label(for='')
+          | flex-basis:
+          input(type='text' ng-model='item.css.flexBasis.defaults.flexy')
